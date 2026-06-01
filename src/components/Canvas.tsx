@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import { CanvasTool } from '@/lib/types'
 
 interface CanvasProps {
@@ -26,7 +26,6 @@ export default function Canvas({
 }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
   const [scale, setScale] = useState(1)
   const scaleRef = useRef(1)
   const offsetRef = useRef({ x: 0, y: 0 })
@@ -34,33 +33,19 @@ export default function Canvas({
   const toolRef = useRef(tool)
   toolRef.current = tool
 
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContainerSize({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        })
-      }
-    })
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
+  const draw = useCallback(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    const container = containerRef.current
+    if (!canvas || !container) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
     const dpr = window.devicePixelRatio || 1
-    const w = containerSize.width
-    const h = containerSize.height
+    const w = container.clientWidth
+    const h = container.clientHeight
 
-    canvas.width = w * dpr
-    canvas.height = h * dpr
+    canvas.width = Math.round(w * dpr)
+    canvas.height = Math.round(h * dpr)
     canvas.style.width = `${w}px`
     canvas.style.height = `${h}px`
 
@@ -107,7 +92,23 @@ export default function Canvas({
     }
 
     ctx.restore()
-  }, [grid, gridWidth, gridHeight, cellSize, showGridLines, scale, containerSize])
+  }, [grid, gridWidth, gridHeight, cellSize, showGridLines, scale])
+
+  // Draw on any state change
+  useEffect(() => {
+    draw()
+  }, [draw])
+
+  // ResizeObserver — redraw when container resizes
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const observer = new ResizeObserver(() => {
+      draw()
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [draw])
 
   useEffect(() => {
     const canvas = canvasRef.current
