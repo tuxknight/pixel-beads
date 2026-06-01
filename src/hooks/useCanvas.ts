@@ -13,7 +13,7 @@ export function useCanvas() {
   const [grid, setGrid] = useState<(string | null)[][]>(() => createGrid(32, 32))
   const [gridWidth, setGridWidth] = useState(32)
   const [gridHeight, setGridHeight] = useState(32)
-  const [selectedColor, setSelectedColor] = useState('#212121')
+  const [selectedColor, setSelectedColor] = useState<string | null>(null)
   const [tool, setTool] = useState<CanvasTool>({ type: 'draw' })
   const [cellSize, setCellSize] = useState(20)
   const [paletteKey, setPaletteKey] = useState<'perler' | 'artkal' | 'hama'>('perler')

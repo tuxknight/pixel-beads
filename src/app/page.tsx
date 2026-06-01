@@ -1,15 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import dynamic from 'next/dynamic'
 import { useCanvas } from '@/hooks/useCanvas'
 import Toolbar from '@/components/Toolbar'
 import PalettePanel from '@/components/PalettePanel'
 import ImageImport from '@/components/ImageImport'
 import ExportDialog from '@/components/ExportDialog'
+import Canvas from '@/components/Canvas'
 import { saveDesign, generateId } from '@/lib/storage'
-
-const Canvas = dynamic(() => import('@/components/Canvas'), { ssr: false })
 
 const RECENT_KEY = 'beads-recent-colors'
 
