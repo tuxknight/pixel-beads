@@ -111,7 +111,7 @@ export default function Home() {
     <div className="flex flex-col h-screen" style={{ backgroundColor: '#1a1a1a', color: '#fff' }}>
       {/* Top Bar */}
       <header className="flex items-center justify-between px-4 py-2 shrink-0" style={{ backgroundColor: '#1a1a1a' }}>
-        <h1 className="text-xl font-bold">Beads</h1>
+        <h1 className="text-xl font-bold">拼豆图纸</h1>
 
         <div className="flex gap-1">
           {tabDefs.map(tab => (

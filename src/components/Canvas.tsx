@@ -64,27 +64,32 @@ export default function Canvas({
     [cellSize, gridWidth, gridHeight]
   )
 
-  const handleMouseDown = useCallback(
+  const handleCellAction = useCallback(
     (e: any) => {
-      if (tool.type === 'eyedropper' || tool.type === 'fill') {
-        const coords = getCellCoords(e)
-        if (coords) onCellClick(coords.row, coords.col)
-        return
-      }
-      setIsDrawing(true)
       const coords = getCellCoords(e)
       if (coords) onCellClick(coords.row, coords.col)
     },
-    [tool, getCellCoords, onCellClick]
+    [getCellCoords, onCellClick]
+  )
+
+  const handleMouseDown = useCallback(
+    (e: any) => {
+      if (tool.type === 'eyedropper' || tool.type === 'fill') {
+        handleCellAction(e)
+        return
+      }
+      setIsDrawing(true)
+      handleCellAction(e)
+    },
+    [tool, handleCellAction]
   )
 
   const handleMouseMove = useCallback(
     (e: any) => {
       if (!isDrawing || (tool.type !== 'draw' && tool.type !== 'erase')) return
-      const coords = getCellCoords(e)
-      if (coords) onCellClick(coords.row, coords.col)
+      handleCellAction(e)
     },
-    [isDrawing, tool, getCellCoords, onCellClick]
+    [isDrawing, tool, handleCellAction]
   )
 
   const handleMouseUp = useCallback(() => {
@@ -192,11 +197,11 @@ export default function Canvas({
       className="w-full h-full overflow-hidden rounded-lg"
       style={{ backgroundColor: '#1a1a1a', minHeight: 400 }}
     >
-      <Stage
+    <Stage
         ref={stageRef}
         width={stageWidth}
         height={stageHeight}
-        draggable={!isDrawing}
+        draggable={false}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
